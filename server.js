@@ -26,7 +26,7 @@ app.use(
   cors({
     credentials: true,
     //origin: "http://localhost:3000",
-    origin: "https://connectin-you.herokuapp.com/",
+    origin: "https://connectin-you.herokuapp.com",
   })
 );
 //app.use(cors());
