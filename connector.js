@@ -5,7 +5,7 @@ require('dotenv').config()
 let mongoose = require('mongoose');
 const { postSchema, userSchema, imageSchema } = require('./schema')
 
-mongoose.connect(process.env.MONGO_URL || mongoURI, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(mongoURI || process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => { console.log("connection established with mongodb server online"); })
     .catch(err => {
         console.log("error while connection", err)
