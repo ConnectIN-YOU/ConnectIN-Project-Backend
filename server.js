@@ -41,6 +41,28 @@ app.use(
     },
   })
 ); // adds a property called session to req
+// const session_secret = "newton";
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "http://localhost:3000",
+//   })
+// );
+// //app.use(cors());
+// app.set("trust proxy", 1);
+// app.use(
+//   session({
+//     secret: session_secret,
+//     resave: true,
+//     saveUninitialized: true,
+//     // cookie: {
+//     //   maxAge: 1 * 60 * 60 * 1000,
+//     //   sameSite: "none",
+//     //   secure: true,
+//     // },
+//   })
+// ); // adds a property called session to req
+
 
 const isNullOrUndefined = (val) => {
   return val === null || val === undefined || val === "";
@@ -129,6 +151,20 @@ const testDataPostDB = async () => {
   await userDb.deleteMany();
 };
 //testDataPostDB();
+
+app.post("/checkUserName", async (req, res) => {
+  const { userName } = req.body;
+  const existingUser = await userDb.findOne({ userName });
+  if (isNullOrUndefined(existingUser)) {
+    res.send({
+      isAvailable: true,
+    });
+  } else {
+    res.send({
+      isAvailable: false,
+    });
+  }
+});
 
 const AuthMiddleware = async (req, res, next) => {
   try {
