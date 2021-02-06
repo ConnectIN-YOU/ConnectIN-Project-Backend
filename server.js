@@ -34,10 +34,10 @@ app.set("trust proxy", 1);
 app.use(
   session({
     secret: session_secret,
-    cookie: { 
+    cookie: {
       maxAge: 1*60*60*1000,
       sameSite: 'none',
-      secure: true, 
+      secure: true,
     },
   })
 ); // adds a property called session to req
@@ -62,7 +62,6 @@ app.use(
 //     // },
 //   })
 // ); // adds a property called session to req
-
 
 const isNullOrUndefined = (val) => {
   return val === null || val === undefined || val === "";
@@ -118,10 +117,16 @@ app.post("/signUp", async (req, res) => {
   });
   //testDataPostDB();
   if (existingUserList.length > 0) {
+    let errMsg = "";
+    if (userName === existingUserList[0].userName) {
+      errMsg =
+        "You have a doppelgänger in terms of Username, Please think of some different Username";
+    } else {
+      errMsg = "User already registered with us. Please click on Login button.";
+    }
     res.status(400).send({
       alreadyRegistered: true,
-      errorMsg:
-        "User already registered with us. Please click on Login button.",
+      errorMsg: errMsg,
     });
   } else {
     const newUser = new userDb({
