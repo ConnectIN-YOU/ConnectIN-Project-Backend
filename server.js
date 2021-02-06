@@ -4,6 +4,8 @@ const port = 9999;
 const session = require("express-session");
 const cors = require("cors");
 const path = require("path");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 const fs = require("fs");
 const { postDb, userDb, imageDb } = require("./connector");
 app.use(express.json()); // added body key to req
@@ -21,31 +23,12 @@ var storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }).single("file");
 
-const session_secret = "newton";
-app.use(
-  cors({
-    credentials: true,
-    //origin: "http://localhost:3000",
-    origin: "https://connectin-you.herokuapp.com",
-  })
-);
-//app.use(cors());
-app.set("trust proxy", 1);
-app.use(
-  session({
-    secret: session_secret,
-    cookie: {
-      maxAge: 1*60*60*1000,
-      sameSite: 'none',
-      secure: true,
-    },
-  })
-); // adds a property called session to req
 // const session_secret = "newton";
 // app.use(
 //   cors({
 //     credentials: true,
-//     origin: "http://localhost:3000",
+//     //origin: "http://localhost:3000",
+//     origin: "https://connectin-you.herokuapp.com",
 //   })
 // );
 // //app.use(cors());
@@ -53,15 +36,34 @@ app.use(
 // app.use(
 //   session({
 //     secret: session_secret,
-//     resave: true,
-//     saveUninitialized: true,
-//     // cookie: {
-//     //   maxAge: 1 * 60 * 60 * 1000,
-//     //   sameSite: "none",
-//     //   secure: true,
-//     // },
+//     cookie: {
+//       maxAge: 1*60*60*1000,
+//       sameSite: 'none',
+//       secure: true,
+//     },
 //   })
 // ); // adds a property called session to req
+const session_secret = "newton";
+app.use(
+  cors({
+    credentials: true,
+    origin: "http://localhost:3000",
+  })
+);
+//app.use(cors());
+app.set("trust proxy", 1);
+app.use(
+  session({
+    secret: session_secret,
+    resave: true,
+    saveUninitialized: true,
+    // cookie: {
+    //   maxAge: 1 * 60 * 60 * 1000,
+    //   sameSite: "none",
+    //   secure: true,
+    // },
+  })
+); // adds a property called session to req
 
 const isNullOrUndefined = (val) => {
   return val === null || val === undefined || val === "";
@@ -147,6 +149,56 @@ app.post("/signUp", async (req, res) => {
     res.send({
       alreadyRegistered: false,
       newUser,
+    });
+  }
+});
+
+app.post("/forgotPassword", async (req, res) => {
+  try {
+    const { userEmail } = req.body;
+    const existingUserList = await userDb.find({ userEmail: userEmail });
+    if (existingUserList.length > 0) {
+      const token = crypto.randomBytes(20).toString("hex");
+      existingUserList[0].resetPasswordToken = token;
+      await existingUserList[0].save();
+
+      const transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        auth: {
+          user: process.env.EMAIL, // generated ethereal user
+          pass: process.env.PASSWD, // generated ethereal password
+        },
+      });
+      console.log("transporter ", transporter);
+      const localhost = "http://localhost:3000/";
+      let info = await transporter.sendMail({
+        from: `${process.env.EMAIL}`, // sender address
+        to: `${userEmail}`, // list of receivers
+        subject: "Link to reset the Password", // Subject line
+        text: `Hello ${
+          existingUserList[0].userName
+        }, You are recieving this email in order to change your password. Use the link below and reset the password! \n
+        ${localhost || process.env.FRONTENDURL}reset/${token} `, // plain text body
+        //html: "<b>Hello world?</b>", // html body
+      });
+      console.log("sendMail ", info);
+      res.send({
+        success: true,
+        userPresent: true,
+      });
+      return;
+    } else {
+      res.send({
+        success: true,
+        userPresent: false,
+      });
+      return;
+    }
+  } catch (err) {
+    console.log("198 "+err);
+    res.send({
+      success: false,
+      userPresent: false,
     });
   }
 });

@@ -23,6 +23,7 @@ const userSchema = new Schema({
   following: [Schema.Types.ObjectId],
   posts: [Schema.Types.ObjectId],
   skills: [String],
+  resetPasswordToken: String,
 });
 
 const postSchema = new Schema({
