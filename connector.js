@@ -1,5 +1,5 @@
-// const mongoURI = "mongodb://localhost:27017" + "/ConnectIN"
-const mongoURI = "mongodb+srv://cris:cris@cluster0.oo7o6.mongodb.net/ConnectIN?retryWrites=true&w=majority"
+const mongoURI = "mongodb://localhost:27017" + "/ConnectIN"
+// const mongoURI = "mongodb+srv://cris:cris@cluster0.oo7o6.mongodb.net/ConnectIN?retryWrites=true&w=majority"
 require('dotenv').config()
 
 let mongoose = require('mongoose');
