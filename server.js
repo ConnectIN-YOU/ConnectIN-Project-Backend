@@ -23,31 +23,12 @@ var storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage }).single("file");
 
-// const session_secret = "newton";
-// app.use(
-//   cors({
-//     credentials: true,
-//     //origin: "http://localhost:3000",
-//     origin: "https://connectin-you.herokuapp.com",
-//   })
-// );
-// //app.use(cors());
-// app.set("trust proxy", 1);
-// app.use(
-//   session({
-//     secret: session_secret,
-//     cookie: {
-//       maxAge: 1*60*60*1000,
-//       sameSite: 'none',
-//       secure: true,
-//     },
-//   })
-// ); // adds a property called session to req
 const session_secret = "newton";
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    //origin: "http://localhost:3000",
+    origin: "https://connectin-you.herokuapp.com",
   })
 );
 //app.use(cors());
@@ -55,15 +36,34 @@ app.set("trust proxy", 1);
 app.use(
   session({
     secret: session_secret,
-    resave: true,
-    saveUninitialized: true,
-    // cookie: {
-    //   maxAge: 1 * 60 * 60 * 1000,
-    //   sameSite: "none",
-    //   secure: true,
-    // },
+    cookie: {
+      maxAge: 1*60*60*1000,
+      sameSite: 'none',
+      secure: true,
+    },
   })
 ); // adds a property called session to req
+// const session_secret = "newton";
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "http://localhost:3000",
+//   })
+// );
+// //app.use(cors());
+// app.set("trust proxy", 1);
+// app.use(
+//   session({
+//     secret: session_secret,
+//     resave: true,
+//     saveUninitialized: true,
+//     // cookie: {
+//     //   maxAge: 1 * 60 * 60 * 1000,
+//     //   sameSite: "none",
+//     //   secure: true,
+//     // },
+//   })
+// ); // adds a property called session to req
 
 const isNullOrUndefined = (val) => {
   return val === null || val === undefined || val === "";
@@ -177,7 +177,7 @@ app.post("/forgotPassword", async (req, res) => {
         text: `Hello ${
           existingUserList[0].userName
         }, You are recieving this email in order to change your password. Use the link below and reset the password! \n
-        ${localhost || process.env.FRONTENDURL}reset/${token} `, // plain text body
+        ${process.env.FRONTENDURL || localhost}reset/${token} `, // plain text body
         //html: "<b>Hello world?</b>", // html body
       });
       res.send({
