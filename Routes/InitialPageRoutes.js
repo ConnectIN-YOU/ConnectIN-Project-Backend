@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const session = require("express-session");
 const { postDb, userDb, imageDb } = require("../connector");
+const crypto = require("crypto");
+const nodemailer = require("nodemailer");
 routes.use(express.json()); // added body key to req
 
 const isNullOrUndefined = (val) => {

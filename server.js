@@ -3,10 +3,6 @@ const app = express();
 const port = 9999;
 const session = require("express-session");
 const cors = require("cors");
-const path = require("path");
-const crypto = require("crypto");
-const nodemailer = require("nodemailer");
-const fs = require("fs");
 app.use(express.json()); // added body key to req
 require("dotenv").config();
 const InitialPageRoutes = require('./Routes/InitialPageRoutes');
