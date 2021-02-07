@@ -169,7 +169,6 @@ app.post("/forgotPassword", async (req, res) => {
           pass: process.env.PASSWD, // generated ethereal password
         },
       });
-      console.log("transporter ", transporter);
       const localhost = "http://localhost:3000/";
       let info = await transporter.sendMail({
         from: `${process.env.EMAIL}`, // sender address
@@ -181,7 +180,6 @@ app.post("/forgotPassword", async (req, res) => {
         ${localhost || process.env.FRONTENDURL}reset/${token} `, // plain text body
         //html: "<b>Hello world?</b>", // html body
       });
-      console.log("sendMail ", info);
       res.send({
         success: true,
         userPresent: true,
@@ -195,10 +193,63 @@ app.post("/forgotPassword", async (req, res) => {
       return;
     }
   } catch (err) {
-    console.log("198 "+err);
     res.send({
       success: false,
       userPresent: false,
+    });
+  }
+});
+
+app.post("/resetPW", async (req, res) => {
+  try {
+    const { userName, password, token } = req.body;
+    const existingUser = await userDb.findOne({ userName });
+    if (isNullOrUndefined(existingUser)) {
+      res.send({
+        userFound: false,
+        success: true,
+        tokenValid: false,
+        dbConnectSuccess: false,
+      });
+      return;
+    } else {
+      if (
+        isNullOrUndefined(existingUser.resetPasswordToken) &&
+        existingUser.resetPasswordToken !== token
+      ) {
+        res.send({
+          userFound: false,
+          success: true,
+          tokenValid: false,
+          dbConnectSuccess: false,
+        });
+        return;
+      }
+      existingUser.password = password;
+      existingUser.resetPasswordToken = "";
+      try {
+        await existingUser.save();
+        res.send({
+          userFound: true,
+          success: true,
+          tokenValid: true,
+          dbConnectSuccess: true,
+        });
+      } catch (err) {
+        res.send({
+          userFound: false,
+          success: false,
+          tokenValid: true,
+          dbConnectSuccess: false,
+        });
+      }
+    }
+  } catch (err) {
+    res.send({
+      userFound: false,
+      success: false,
+      tokenValid: false,
+      dbConnectSuccess: false,
     });
   }
 });
@@ -583,7 +634,6 @@ app.get("/getUserData", AuthMiddleware, async (req, res) => {
       });
     }
   } catch (err) {
-    console.log(err);
     res.status(500).send({
       retrivalSuccess: false,
       authorizationSuccess: true,
