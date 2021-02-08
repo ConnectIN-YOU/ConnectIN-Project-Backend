@@ -9,31 +9,12 @@ const InitialPageRoutes = require('./Routes/InitialPageRoutes');
 const HomePageRoutes = require("./Routes/HomePageRoutes");
 const PostPageRoutes = require("./Routes/PostPageRoutes");
 
-// const session_secret = "newton";
-// app.use(
-//   cors({
-//     credentials: true,
-//     //origin: "http://localhost:3000",
-//     origin: "https://connectin-you.herokuapp.com",
-//   })
-// );
-// //app.use(cors());
-// app.set("trust proxy", 1);
-// app.use(
-//   session({
-//     secret: session_secret,
-//     cookie: {
-//       maxAge: 1*60*60*1000,
-//       sameSite: 'none',
-//       secure: true,
-//     },
-//   })
-// ); // adds a property called session to req
 const session_secret = "newton";
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:3000",
+    //origin: "http://localhost:3000",
+    origin: "https://connectin-you.herokuapp.com",
   })
 );
 //app.use(cors());
@@ -41,15 +22,34 @@ app.set("trust proxy", 1);
 app.use(
   session({
     secret: session_secret,
-    resave: true,
-    saveUninitialized: true,
-    // cookie: {
-    //   maxAge: 1 * 60 * 60 * 1000,
-    //   sameSite: "none",
-    //   secure: true,
-    // },
+    cookie: {
+      maxAge: 1*60*60*1000,
+      sameSite: 'none',
+      secure: true,
+    },
   })
 ); // adds a property called session to req
+// const session_secret = "newton";
+// app.use(
+//   cors({
+//     credentials: true,
+//     origin: "http://localhost:3000",
+//   })
+// );
+// //app.use(cors());
+// app.set("trust proxy", 1);
+// app.use(
+//   session({
+//     secret: session_secret,
+//     resave: true,
+//     saveUninitialized: true,
+//     // cookie: {
+//     //   maxAge: 1 * 60 * 60 * 1000,
+//     //   sameSite: "none",
+//     //   secure: true,
+//     // },
+//   })
+// ); // adds a property called session to req
 
 
 app.use("/home", HomePageRoutes);
